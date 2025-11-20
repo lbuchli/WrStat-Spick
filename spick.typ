@@ -3,7 +3,6 @@
 
 #set text(font: "Noto Sans")
 
-#set table(stroke: none, inset: 10pt)
 
 #let plot-style = cetz.draw.set-style(
     axes: (
@@ -50,14 +49,21 @@
 - Laplace
 - Bernoulli
 
-#page(columns: 2, flipped: true, "a3")[
+#page(flipped: true, "a3", margin: 1cm)[
 
 = Wahrscheinlichkeitsverteilungen
 
+#let boxeddistr(title, content) = rect[
+    #align(center, pad(6pt)[=== #title])
+    #set par(spacing: 0pt)
+    #set table(stroke: none, inset: 5pt)
+    #content
+]
+
 == Stetig/Kontinuierlich
 
-=== Gleichverteilung
 
+#boxeddistr("Gleichverteilung")[
 #table(
     columns: (auto, auto),
     cetz.canvas({
@@ -94,28 +100,38 @@
             }
         )
     }),
-    $F(x) := cases(
+    $
+    F(x) := cases(
       0 & x < a,
       frac(x - a, b - a) quad & x in [a, b],
       1 & x > b
-    )$,
-    $phi(x) := cases(
+    )
+    $,
+    $
+    phi(x) := cases(
       0 & x < a,
       frac(1, b - a) quad & x in [a, b],
       0 & x > b
-    )$,
+    )
+    $,
 )
 
 #table(
     columns: (auto, auto, auto),
-    $E(X) = frac(a+b, 2)$,
-    $"var"(X) = frac((b-a)^2, 12)$,
-    $"Median" = frac(a + b, 2)$
+    $
+        E(X) = frac(a+b, 2)
+    $,
+    $
+        "var"(X) = frac((b-a)^2, 12)
+    $,
+    $
+        "Median" = frac(a + b, 2)
+    $
 )
+]
 
 
-=== Exponentialverteilung
-
+#boxeddistr("Exponentialverteilung")[
 #table(
     columns: (auto, auto),
     cetz.canvas({
@@ -153,25 +169,35 @@
             }
         )
     }),
-    $F(x) := cases(
+    $
+    F(x) := cases(
       0 & x < 0,
       1-e^(-a x) quad & x in x >= 0,
-    )$,
-    $phi(x) := cases(
+      )
+    $,
+    $
+    phi(x) := cases(
       0 & x < 0,
       a  e^(-a x) quad & x >= 0,
-    )$,
+      )
+    $,
 )
 
 #table(
     columns: (auto, auto, auto),
-    $E(X) = frac(1, a)$,
-    $"var"(X) = 1/a^2$,
-    $"Median" = t_(1/2) = "ln"(2) / a$
+    $
+        E(X) = frac(1, a)
+    $,
+    $
+        "var"(X) = 1/a^2
+    $,
+    $
+        "Median" = t_(1/2) = "ln"(2) / a
+    $
 )
+]
 
-=== (Standard-)Normalverteilung
-
+#boxeddistr("(Standard-)Normalverteilung")[
 #table(
     columns: (auto, auto),
     cetz.canvas({
@@ -200,8 +226,12 @@
             }
         )
     }),
-    $F(x) "nicht berechenbar"$,
-    $phi(x) := frac(1, sqrt(2 pi) sigma) e^(-frac((x-mu)^2, 2 sigma^2))$,
+    $
+        F(x) "nicht berechenbar"
+    $,
+    $
+        phi(x) := frac(1, sqrt(2 pi) sigma) e^(-frac((x-mu)^2, 2 sigma^2))
+    $,
 )
 
 #table(
@@ -216,13 +246,180 @@
 - $mu plus.minus 3 sigma ~> 99.7%$
 
 Für Standardverteilung: $mu = 0$, $sigma = 1$
+]
 
-- Potenzverteilung
+#boxeddistr("Potenzverteilung")[
+#table(
+    columns: (auto, auto),
+    cetz.canvas({
+        plot-style
+        plot.plot(
+            ..plot-defaults,
+            x-tick-step: 1,
+            y-tick-step: 0.5,
+            legend: none,
+            {
+                plot.add(domain: (0, 4), x =>
+                if x < 1 { 0 }
+                else { 1.5 * (1 / -1.5) * calc.pow(x, -1.5) + (1.5 / 1.5) }
+                )
+                plot.add-vline(1, label: $x_min$)
+                plot.add-vline(1.5/0.5, label: $E(x)$)
+            }
+        )
+    }),
+    cetz.canvas({
+        plot-style
+        plot.plot(
+            ..plot-defaults,
+            x-tick-step: 1,
+            y-tick-step: 1,
+            fill-below: true,
+            {
+                plot.add(domain: (0, 4), x =>
+                if x < 1 { 0 }
+                else { 1.5 * calc.pow(x, -2.5) }
+                )
+                plot.add-vline(1, label: $x_min$)
+                plot.add-vline(1.5/0.5, label: $E(x)$)
+            }
+        )
+    }),
+    $
+    F(x)_(|a>1) := cases(
+    frac(alpha - 1, x_min^(1 - alpha)) frac(1, 1-alpha) x^(-alpha) quad & x > x_min,
+        0 & x <= x_min
+        )
+    $,
+    $
+    phi(x)_(|a>1) := cases(
+        frac(alpha - 1, x_min^(1 - alpha)) x^(-alpha) quad & x > x_min,
+        0 & x <= x_min
+        )
+    $,
+)
+
+#table(
+    columns: (auto, auto),
+    $E(X)_(|a>2) = frac(alpha - 1, alpha - 2) x_min$,
+    $"var"(X)_(|a>3) = (frac(alpha - 1, alpha - 3) - (frac(alpha - 1, alpha - 2))^2) x_min^2$,
+    $"Median" = 1 - (frac(x_(1/2), x_min))^(1-alpha)$,
+    $x_(1/2) = 2^frac(1, alpha - 1) x_min$
+)
+]
 
 == Diskret
 
-- Binomialverteilung
-- Hypergeometrische Verteilung
-- Poisson-Verteilung
-- Erlang-Verteilung
+#boxeddistr("Binomialverteilung")[
+#table(
+    columns: (auto),
+    cetz.canvas({
+        plot-style
+        chart.columnchart(
+            ..plot-defaults,
+            y-tick-step: 0.1,
+            legend: none,
+            (..range(0, 6).map(k => (k, calc.binom(10, k)*calc.pow(0.25, k)*calc.pow(0.75, 10-k))))
+        )
+    }),
+    $
+    F(k) := sum_(i=0)^k binom(n, i) p^i (1-p)^(n-i)
+    $,
+)
+
+#table(
+    columns: (auto, auto),
+    $E(X) = n p$,
+    $"var"(X) = n p (1 - p)$,
+)
+]
+
+#boxeddistr("Hypergeometrische Verteilung")[
+#table(
+    columns: (auto),
+    cetz.canvas({
+        plot-style
+        chart.columnchart(
+            ..plot-defaults,
+            y-tick-step: 0.1,
+            legend: none,
+            (..range(0, 6).map(k => (k, (calc.binom(7, k) * calc.binom(15-7, 6-k)) / calc.binom(15, 6))))
+        )
+    }),
+    $
+    h(k|N;M;n) := frac(binom(M, k) binom(N-M, n-k), binom(N, n))
+    $,
+)
+
+#table(
+    columns: (auto, auto),
+    $E(X) = n frac(M, N)$,
+    $"var"(X) = n frac(M (N - M) (N - n), N^2 (N - 1))$,
+)
+]
+
+#boxeddistr("Poisson-Verteilung")[
+#table(
+    columns: (auto),
+    cetz.canvas({
+        plot-style
+        let lambda = 3
+        chart.columnchart(
+            ..plot-defaults,
+            y-tick-step: 0.1,
+            legend: none,
+            (..range(0, 6).map(k => (k, (calc.pow(lambda, k) / calc.fact(k)) * calc.exp(-lambda))))
+        )
+    }),
+    $
+        P_lambda (k) := frac(lambda^k, k!) e^(-lambda)
+    $,
+)
+
+#table(
+    columns: (auto, auto),
+    $E(X) = lambda$,
+    $"var"(X) = lambda$,
+)
+]
+
+#boxeddistr("Erlang-Verteilung")[
+#table(
+    columns: (auto, auto),
+    cetz.canvas({
+        plot-style
+        let k = 7
+        let a = 2
+        chart.columnchart(
+            ..plot-defaults,
+            y-tick-step: 0.2,
+            legend: none,
+            (..range(1, 7).map(x => (x, 1-calc.exp(-a*x) * range(0, k - 1).map(i => calc.pow(a*x, i) / calc.fact(i)).sum())))
+        )
+    }),
+    cetz.canvas({
+        plot-style
+        let k = 7
+        let a = 2
+        chart.columnchart(
+            ..plot-defaults,
+            y-tick-step: 0.2,
+            legend: none,
+            (..range(1, 7).map(x => (x, calc.pow(a, k) * (calc.pow(x, k - 1) / calc.fact(k - 1)) * calc.exp(-a * x))))
+        )
+    }),
+    $
+    F_(X_1,...,X_k)(x) := cases(
+    1-e^(-a x) sum^(k-1)_(i=0) frac((a x)^i, i!) quad & x >= 0,
+    0 & x < 0
+    )
+    $,
+    $
+    phi_(X_1,...,X_k)(x) := cases(
+    a^k frac(x^(k-1), (k-1)!) e^(- a x) quad & x >= 0,
+    0 & x < 0
+    )
+    $,
+)
+]
 ]
