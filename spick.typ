@@ -1,8 +1,9 @@
 #import "@preview/cetz:0.4.2"
 #import "@preview/cetz-plot:0.1.3": plot, chart
+#import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
 
 #set text(font: "Noto Sans")
-
+#set math.equation(block: true)
 
 #let plot-style = cetz.draw.set-style(
     axes: (
@@ -24,46 +25,187 @@
     y-label: none,
 )
 
-= Allg. Formelsammlung
+= Ableitung
 
-== Ableitung
-== Integration
+#table(
+    stroke: none, inset: 5pt,
+    columns: (auto, auto),
+    $a$, $0$,
+    $x$, $1$,
+    $f^a$, $a f^(a-1) f'$,
+    $f plus.minus g$, $f' plus.minus g'$,
+    $f times g$, $(f' times g) + (f times g')$,
+    $f / g$, $frac((f' times g) - (f times g'), g^2)$,
+    $e^f$, $e^f times f'$,
+    $ln(f)$, $f'/f$,
+    $log_(a)(f)$, $f'/(f ln(a))$,
+    $sin(f)$, $cos(f) times f'$,
+    $cos(f)$, $-sin(f) times f'$,
+    $f(g)$, $f'(g) times f(g')$,
+)
 
-== Kombinatorik
+= Integration
 
-== Lineare Regression
+#table(
+    stroke: none, inset: 5pt,
+    columns: (auto, auto, auto),
+    [Konstant], $integral f(a) dif x = x times f(a)$, [],
+    [Partiell], $integral f g' = f g integral f' g$, []
+)
 
-== Wahrscheinlichkeit
-- Ereignisse
-- Bayes
-- Totale Wahrscheinlichkeit
-- Zentrales Limit-Theorem
-- Varianz
-- Erwartungswert
-- Tschebyscheff-Ungleichung
-- Satz von Bernoulli
-- Gesetz der grossen Zahlen
+Partiell brauchen, falls $f$ einfach abzuleiten und $g$ einfach zu integrieren
 
-= Experimente
+= Kombinatorik
 
-- Laplace
-- Bernoulli
+== Produkt
+_Bedingung_: Für jede der $n$ Möglichkeiten gibt es eine unabhängige/gleiche Anzahl $N$ Möglichkeiten für den Rest.
 
-#page(flipped: true, "a3", margin: 1cm)[
+_Dann gilt_: Anzahl Möglichkeiten ist $n times N$.
+
+===  Permutation
+Folgt aus Produktregel.
+
+_Bedingung_: $n$ verschiedene Elemente sind beliebig anordbar.
+
+_Dann gilt_: Anzahl Möglichkeiten ist $n!$
+
+== Kombination
+_Bedingung_: Aus $n$ Elementen werden $k$ verschiedene Elemente ausgewählt.
+
+_Dann gilt_: Anzahl Möglichkeiten ist $binom(n, k) = frac(n!, k! (n-k)!)$
+
+= Wahrscheinlichkeit
+
+$
+    P(A backslash B) &= P(A) - P(A inter B) \
+    P(A union B) &= P(A) + P(B) - P(A inter B) \
+    P(A inter B) &= P(A|B) times P(B) = P(B|A) times P(A) \
+    P(A|B) &= frac(P(B|A) times P(A), P(B)) \
+$
+
+== Totale Wahrscheinlichkeit
+
+$ P(A) = sum^n_(i=0) P(A|B_i) times P(B_i) $
+
+== Zufallsvariabeln
+
+Zufallsvariabeln haben den Typ $Omega -> W$. Informell werten sie Ereignisse.
+Diskrete Zufallsvariabeln nehmen nur diskrete Werte von $W$ an. Oft ist $W =
+RR$.
+
+== Unabhängigkeit
+_Intuitiv_: Zwei Zufallsvariabeln $X$ und $Y$ sind unabhängig, wenn Wissen über den Wert von $X$ nichts über die Wahrscheinlichkeitsverteilung von $Y$ aussagt und umgekehrt.
+
+$
+    P((X <= x) and (Y <= y)) = P(X <= x) P(Y <= y) quad quad forall x, y in R
+$
+
+== Erwartungswert
+
+$
+    E(X + Y) &= E(X) + E(Y) \
+    E(lambda X) &= lambda E(X) \
+$
+
+Für unabhängige Zufallsvariablen $X$ und $Y$ gilt zusätzlich:
+
+$
+    E(X Y) &= E(X) times E(Y) \
+$
+
+== Varianz
+
+Für unabhängige Zufallsvariablen $X$ und $Y$ gilt:
+
+$
+    "var"(lambda X) &= lambda^2 "var"(X) \
+    "var"(X + Y) &= "var"(X) + "var"(Y) \
+    "var"(X Y) &= "var"(X) "var"(Y) + "var"(Y) E(X)^2 + "var"(X) E(Y)^2
+$
+
+== Median
+
+Gegeben eine Wahrscheinlichkeitsverteilung $F$:
+$ F("med"(X)) = 1/2 $
+
+== Tschebyscheff-Ungleichung
+
+$ P(|X - mu| > epsilon) <= frac("var"(X), epsilon^2) $
+
+Genauere Resultate, wenn man Anhand einer bekannten Wahrscheinlichkeitsverteilung rechnet.
+
+== Satz von Bernoulli/Gesetz der grossen Zahlen
+
+Der Mittelwert $M_n$ aus $n$ Werten nähert sich für grössere $n$ immer mehr dem Erwartungswert $mu$ an
+
+$
+    P(|M_n - mu| > epsilon) <= frac(sigma^2, epsilon^2 n)
+$
+
+sodass mit $n = infinity$ der Mittelwert dem Erwartungswert entspricht:
+
+$
+    lim_(n->infinity) P(|M_n - mu| > epsilon) = 0
+$
+
+Auch hier sind genauere Schranken möglich, wenn man die Wahrscheinlichkeitsverteilung kennt.
+
+== Experimente
+
+=== Laplace
+
+Experimente mit gleichverteilter Wahrscheinlichkeit
+
+$|Omega| = n$,
+$ P({omega}) = 1/n quad quad forall omega in Omega $
+
+=== Bernoulli
+
+$|Omega| = 2$
 
 = Wahrscheinlichkeitsverteilungen
 
-#let boxeddistr(title, content) = rect[
-    #align(center, pad(6pt)[=== #title])
-    #set par(spacing: 0pt)
-    #set table(stroke: none, inset: 5pt)
-    #content
-]
+== Faltung
+(von Wahrscheinlichkeitsdichten)
 
-== Stetig/Kontinuierlich
+$ phi_1 * phi_2(z) = integral_(-infinity)^infinity phi_1(x_1) phi_2(z - x_1) dif x_1  $
 
 
-#boxeddistr("Gleichverteilung")[
+Es gilt:
+
+$
+    phi_1 * phi_2 &= phi_2 * phi_1 quad & "(Kommutativität)" \
+    phi_1 * (phi_2 * phi_3) &= (phi_1 * phi_2) * phi_3 & "(Assoziativität)" \
+    phi_1 * (phi_2 + phi_3) &= (phi_1 * phi_2) + (phi_1 * phi_3) & "(Distributivität)"
+
+$
+
+== Zentraler Grenzwertsatz
+
+Wenn beliebige Wahrscheinlichkeitsdichten oft gefaltet werden, nähern sie sich
+einer Normalverteilungsdichte an.
+
+== Katalog
+
+
+#page(flipped: true, "a3", margin: 1cm)[
+
+    #let boxeddistr(a, title, content, dx: 0pt, subtitle: []) = place(
+    center + horizon,
+    dx: calc.sin(a) * 40% + dx,
+    dy: calc.cos(a) * 40%,
+    rect[
+        #align(center, pad(6pt)[
+            === #title
+            #subtitle
+        ])
+        #set par(spacing: 0pt)
+        #set table(stroke: none, inset: 5pt)
+        #content
+    ]
+)
+
+#boxeddistr(180deg, "Gleichverteilung")[
 #table(
     columns: (auto, auto),
     cetz.canvas({
@@ -131,7 +273,7 @@
 ]
 
 
-#boxeddistr("Exponentialverteilung")[
+#boxeddistr(225deg, "Exponentialverteilung", subtitle: [Gedächtnislos, Zerfall])[
 #table(
     columns: (auto, auto),
     cetz.canvas({
@@ -197,18 +339,18 @@
 )
 ]
 
-#boxeddistr("(Standard-)Normalverteilung")[
+#boxeddistr(270deg, "(Standard-)Normalverteilung", subtitle: [Summe vieler Einflüsse])[
 #table(
     columns: (auto, auto),
     cetz.canvas({
         plot-style
         plot.plot(
             ..plot-defaults,
-            x-tick-step: 1,
-            y-tick-step: 0.2,
+            x-tick-step: 2,
+            y-tick-step: 0.5,
             legend: none,
             {
-                plot.add(((0.0, 0.5000), (0.1, 0.5398), (0.2, 0.5793),(0.3, 0.6179),(0.4, 0.6554),(0.5, 0.6915),(0.6, 0.7257),(0.7, 0.7580),(0.8, 0.7881),(0.9, 0.8159),(1.0, 0.8413),(1.1, 0.8643),(1.2, 0.8849),(1.3, 0.9032),(1.4, 0.9192),(1.5, 0.9332),(1.6, 0.9452),(1.7, 0.9554),(1.8, 0.9641),(1.9, 0.9713),(2.0, 0.9772),(2.1, 0.9821),(2.2, 0.9861),(2.3, 0.9893),(2.4, 0.9918),(2.5, 0.9938),(2.6, 0.9953),(2.7, 0.9965),(2.8, 0.9974),(2.9, 0.9981),(3.0, 0.9987)))
+                plot.add(((-3.0, 1-0.9987),(-2.9, 1-0.9981),(-2.8, 1-0.9974),(-2.7, 1-0.9965),(-2.6, 1-0.9953),(-2.5, 1-0.9938),(-2.4, 1-0.9918),(-2.3, 1-0.9893),(-2.2, 1-0.9861),(-2.1, 1-0.9821),(-2.0, 1-0.9772),(-1.9, 1-0.9713),(-1.8, 1-0.9641),(-1.7, 1-0.9554),(-1.6, 1-0.9452),(-1.5, 1-0.9332),(-1.4, 1-0.9192),(-1.3, 1-0.9032),(-1.2, 1-0.8849),(-1.1, 1-0.8643),(-1.0, 1-0.8413),(-0.9, 1-0.8159),(-0.8, 1-0.7881),(-0.7, 1-0.7580),(-0.6, 1-0.7257),(-0.5, 1-0.6915),(-0.4, 1-0.6554),(-0.3, 1-0.6179),(-0.2, 1-0.5793),(-0.1, 1-0.5398), /**/ (0.0, 0.5000), (0.1, 0.5398), (0.2, 0.5793),(0.3, 0.6179),(0.4, 0.6554),(0.5, 0.6915),(0.6, 0.7257),(0.7, 0.7580),(0.8, 0.7881),(0.9, 0.8159),(1.0, 0.8413),(1.1, 0.8643),(1.2, 0.8849),(1.3, 0.9032),(1.4, 0.9192),(1.5, 0.9332),(1.6, 0.9452),(1.7, 0.9554),(1.8, 0.9641),(1.9, 0.9713),(2.0, 0.9772),(2.1, 0.9821),(2.2, 0.9861),(2.3, 0.9893),(2.4, 0.9918),(2.5, 0.9938),(2.6, 0.9953),(2.7, 0.9965),(2.8, 0.9974),(2.9, 0.9981),(3.0, 0.9987)))
             }
         )
     }),
@@ -246,9 +388,9 @@
 - $mu plus.minus 3 sigma ~> 99.7%$
 
 Für Standardverteilung: $mu = 0$, $sigma = 1$
-]
+] <normaldistr>
 
-#boxeddistr("Potenzverteilung")[
+#boxeddistr(315deg, "Potenzverteilung", subtitle: [Skalenunabhängig])[
 #table(
     columns: (auto, auto),
     cetz.canvas({
@@ -308,9 +450,7 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
 )
 ]
 
-== Diskret
-
-#boxeddistr("Binomialverteilung")[
+#boxeddistr(0deg, "Binomialverteilung", subtitle: [Genau 2 mögliche Versuchsausgänge])[
 #table(
     columns: (auto),
     cetz.canvas({
@@ -332,9 +472,9 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
     $E(X) = n p$,
     $"var"(X) = n p (1 - p)$,
 )
-]
+] <binomdistr>
 
-#boxeddistr("Hypergeometrische Verteilung")[
+#boxeddistr(45deg, "Hypergeometrische Verteilung", subtitle: [Stichprobe nach Eigenschaft])[
 #table(
     columns: (auto),
     cetz.canvas({
@@ -358,7 +498,7 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
 )
 ]
 
-#boxeddistr("Poisson-Verteilung")[
+#boxeddistr(135deg, "Poisson-Verteilung", subtitle: [Anzahl Ereignisse über fixe Zeit, bekannter Erwartungswert])[
 #table(
     columns: (auto),
     cetz.canvas({
@@ -383,7 +523,7 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
 )
 ]
 
-#boxeddistr("Erlang-Verteilung")[
+#boxeddistr(90deg, "Erlang-Verteilung", dx: -10em, subtitle: [Telefonzentrale, Queues])[
 #table(
     columns: (auto, auto),
     cetz.canvas({
@@ -392,7 +532,7 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
         let a = 2
         chart.columnchart(
             ..plot-defaults,
-            y-tick-step: 0.2,
+            y-tick-step: 0.5,
             legend: none,
             (..range(1, 7).map(x => (x, 1-calc.exp(-a*x) * range(0, k - 1).map(i => calc.pow(a*x, i) / calc.fact(i)).sum())))
         )
@@ -422,4 +562,107 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
     $,
 )
 ]
+
+// #context query(<binomdistr>).at(0).location().position().y
+
 ]
+
+= Schätzen
+
+=== Konsistenz
+
+Wenn die grösse $n$ der Stichprobe gegen $infinity$ geht, nähert sich der Schätzer dem wahren Wert, also $ lim_(n->infinity) theta(X_1, ..., X_n) = theta $
+
+=== Erwartungstreue
+
+Ein Schätzer $theta(X_1, ..., X_n)$ ist erwartungstreu, wenn der Erwartungswert dem wahren Wert entspricht: $ lim_(n->infinity) E(theta(X_1, ..., X_n)) = theta $
+
+
+=== Freiheitsgrade
+
+Anzahl unabhängiger Parameter. Normalerweise Anzahl Versuchsausgänge - 1
+
+=== Maximum Likelyhood-Prinzip
+
+Gute Schätzer lassen sich oft ableiten, indem für gegebene Daten die Wahrscheinlichkeit eines Werts eines Parameters  maximiert wird.
+// TODO
+
+=== Konfidenzintervalle
+
+Ein Intervall, in dem sich der Erwartungswert einer Zufallsvariable mit Wahrscheinlichkeit $1 - alpha$ befindet.
+
+Berechnung basierend auf einer Stichprobe $X_1, X_2, ...$ mit Grösse $n$:
+
+_Mit bekannter Varianz (in Normalverteilung)_
+
+1. Berechne Mittelwert der Stichprobe $overline(X)$
+2. Finde $x_-$, s.t. $F(x_-) = alpha/2$ und $x_+$, s.t. $F(x_+) = 1 - alpha/2$
+3. Konfidenzintervall für $mu$: $[overline(X) + sigma/sqrt(n) x_-, overline(X) + sigma/sqrt(n) x_+]$
+
+_Mit geschätzer Varianz (mit $t$-Verteilung)_
+
+1. Berechne Mittelwert der Stichprobe $overline(X)$,
+2. Berechne Varianz der Stichprobe $S = $
+3. Nachschauen $t_-$ & $t_+$ basierend auf Tabelle der $t$-Verteilung mit $n-1$ Freiheitsgraden
+4. Konfidenzintevall für $mu$: $[overline(X) + t_- S/sqrt(n), overline(X) + t_+ S/sqrt(n)]$
+
+
+= Tests
+
+== $t$-Test
+_Anwendung:_ Stetige Verteilungen, basierend auf Mittelwert und Varianz einer Stichprobe (normalerweise $n <= 30$)
+
+Basierend auf der t-Verteilung (Parameter: $alpha$, Freiheitsgrade $k$) wird ein
+Konfidenzintervall für den $H_0$-Erwartungswert $mu$ aufgestellt. Verlässt ein
+Wert dieses Konfidenzintervall, kann $H_0$ mit Konfidenz $alpha$ verworfen
+werden.
+
+== $F$-Test
+_Anwendung:_ Test, ob Varianzen gleich sind.
+
+== $chi^2$-Test
+_Anwendung:_ Diskrete Verteilungen, mind. 5 gemessene Werte pro Kategorie
+
+== Kolmogoroff-Smirnov-Test
+_Anwendung:_ Test, ob Stichprobe nach einer bestimmten Verteilungsfunktion $F$ verteilt ist.
+
+1. Die Stichprobe wird auf Gleichverteilung im Intervall $[0, 1]$ reduziert. Dazu wird $F$ auf die Werte angewendet.
+2. Konfidenzintervall nach Tabelle mit Parametern $n$, $alpha$ festlegen
+3. Plot
+4. Falls Grenzwerte überschritten: $H_0$ verwerfen
+
+= Filter
+_Grundidee_: Minimieren der Varianz beim Kombinieren mehrerer Zufallsvariabeln.
+
+== Optimale Mittelung
+
+Gegeben zwei Zufallsvariabeln $X$ und $Y$, lässt sich ein Mittelwert mit minimaler Varianz folgendermassen bestimmen:
+
+$$
+
+== Wiener-Filter
+
+Gegeben eine Zufallsvariable $X$, ein Dämpfungsfaktor $a$ und ein Störsignal $N$:
+
+#diagram(
+    node-stroke: 1pt,
+    node((-1,0)),
+    edge("->", $X$),
+    node((0,0), [$times$], name: <a>),
+    edge("->", $a X$),
+    node((1,0), [$+$], name: <N>),
+    edge("->", $a X + N$),
+    node((3,0), [$times$], name: <b>),
+    edge("->", $b(a X + N)$),
+    node((5,0)),
+    edge((rel: (0, -1), to: <a>), <a>, "->", $a$),
+    edge((rel: (0, -1), to: <N>), <N>, "->", $N$),
+    edge((rel: (0, -1), to: <b>), <b>, "->", $b$),
+)
+
+_Ziel_: $b$ bestimmen, so dass $"var"(b(a X + N) - X)$ möglichst klein ist.
+
+$ b = frac(a sigma_X^2, a^2 sigma_X^2 + sigma_N^2) $
+
+
+== Kalman-Filter
