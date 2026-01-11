@@ -2,6 +2,7 @@
 #import "@preview/cetz-plot:0.1.3": plot, chart
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
 
+#set page(columns: 2, flipped: true)
 #set text(font: "Noto Sans")
 #set math.equation(block: true)
 
@@ -113,15 +114,30 @@ $
     E(X Y) &= E(X) times E(Y) \
 $
 
+Bei einer diskreten Wahrscheinlichkeitsverteilung ist $ E(X) = sum^infinity_(i=0) X(omega_i) times P({omega_i}) $
+
+
+Aus einer kontinuierlichen Dichtefunktion $phi$ kann der Erwartungswert berechnet werden: $ E(X) = integral phi(x) x dif x  $
+
 == Varianz
 
 Für unabhängige Zufallsvariablen $X$ und $Y$ gilt:
 
 $
+    "var(X)" &= E(X^2) - E(X)^2 \
     "var"(lambda X) &= lambda^2 "var"(X) \
     "var"(X + Y) &= "var"(X) + "var"(Y) \
-    "var"(X Y) &= "var"(X) "var"(Y) + "var"(Y) E(X)^2 + "var"(X) E(Y)^2
+    "var"(X Y) &= "var"(X) "var"(Y) + "var"(Y) E(X)^2 + "var"(X) E(Y)^2 \
+    "cov"(X, Y) &= E(X Y) - E(X) E(Y) \
+    "var"(M_n) &= "var"(X) / n
 $
+
+Aus einer kontinuierlichen Dichtefunktion kann die Varianz abgeleitet werden:
+
+$
+    "var"(X) = E(X^2) - E(X)^2 = (integral x^2 phi(x) dif x) - (integral phi(x) x dif x)
+$
+
 
 == Median
 
@@ -188,22 +204,18 @@ einer Normalverteilungsdichte an.
 == Katalog
 
 
-#page(flipped: true, "a3", margin: 1cm)[
+#page(flipped: true, columns: 1, "a4", margin: 0.5cm)[
 
-    #let boxeddistr(a, title, content, dx: 0pt, subtitle: []) = place(
-    center + horizon,
-    dx: calc.sin(a) * 40% + dx,
-    dy: calc.cos(a) * 40%,
-    rect[
+    #let boxeddistr(a, title, content, dx: 0pt, subtitle: []) = box(rect(stroke: none)[
+        #set text(9pt)
         #align(center, pad(6pt)[
             === #title
             #subtitle
         ])
         #set par(spacing: 0pt)
         #set table(stroke: none, inset: 5pt)
-        #content
-    ]
-)
+        #align(center, content)
+    ])
 
 #boxeddistr(180deg, "Gleichverteilung")[
 #table(
@@ -257,7 +269,6 @@ einer Normalverteilungsdichte an.
     )
     $,
 )
-
 #table(
     columns: (auto, auto, auto),
     $
@@ -271,8 +282,6 @@ einer Normalverteilungsdichte an.
     $
 )
 ]
-
-
 #boxeddistr(225deg, "Exponentialverteilung", subtitle: [Gedächtnislos, Zerfall])[
 #table(
     columns: (auto, auto),
@@ -338,7 +347,6 @@ einer Normalverteilungsdichte an.
     $
 )
 ]
-
 #boxeddistr(270deg, "(Standard-)Normalverteilung", subtitle: [Summe vieler Einflüsse])[
 #table(
     columns: (auto, auto),
@@ -383,13 +391,10 @@ einer Normalverteilungsdichte an.
     $"Median" = mu$
 )
 
-- $mu plus.minus 1 sigma ~> 68%$
-- $mu plus.minus 2 sigma ~> 95%$
-- $mu plus.minus 3 sigma ~> 99.7%$
-
+$mu plus.minus 1 sigma ~> 68%$, $mu plus.minus 2 sigma ~> 95%$, $mu plus.minus 3 sigma ~> 99.7%$
+\
 Für Standardverteilung: $mu = 0$, $sigma = 1$
-] <normaldistr>
-
+]
 #boxeddistr(315deg, "Potenzverteilung", subtitle: [Skalenunabhängig])[
 #table(
     columns: (auto, auto),
@@ -449,7 +454,6 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
     $x_(1/2) = 2^frac(1, alpha - 1) x_min$
 )
 ]
-
 #boxeddistr(0deg, "Binomialverteilung", subtitle: [Genau 2 mögliche Versuchsausgänge])[
 #table(
     columns: (auto),
@@ -471,9 +475,13 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
     columns: (auto, auto),
     $E(X) = n p$,
     $"var"(X) = n p (1 - p)$,
+    $sigma = sqrt("var"(X))$
 )
-] <binomdistr>
+Normalapproximation mit Korrektur: \
+$P(X <= a) = Phi(frac(b + 1/2 - mu, sigma))$ \
+$P(a <= X <= b) = Phi(frac(b + 1/2 - mu, sigma)) - Phi(frac(a - 1/2 - mu, sigma))$
 
+]
 #boxeddistr(45deg, "Hypergeometrische Verteilung", subtitle: [Stichprobe nach Eigenschaft])[
 #table(
     columns: (auto),
@@ -489,6 +497,10 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
     $
     h(k|N;M;n) := frac(binom(M, k) binom(N-M, n-k), binom(N, n))
     $,
+    align(left)[$N$: Gesamte Grösse \
+    $n$: Grösse der Stichprobe \
+    $M$: Anteil mit Eigenschaft in Gesamtgrösse \
+    $k$: Gesuchte Anzahl]
 )
 
 #table(
@@ -497,13 +509,22 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
     $"var"(X) = n frac(M (N - M) (N - n), N^2 (N - 1))$,
 )
 ]
-
-#boxeddistr(135deg, "Poisson-Verteilung", subtitle: [Anzahl Ereignisse über fixe Zeit, bekannter Erwartungswert])[
+#boxeddistr(135deg, "Poisson-Verteilung", subtitle: [Anzahl Ereignisse über fixe Zeit, bekannter Erwartungswert, *selten*])[
 #table(
-    columns: (auto),
+    columns: (auto, auto),
     cetz.canvas({
         plot-style
-        let lambda = 3
+        let lambda = 2
+        chart.columnchart(
+            ..plot-defaults,
+            y-tick-step: 0.5,
+            legend: none,
+            (..range(0, 6).map(k => (k, 1-(range(0, k+1).map(i => (calc.pow(lambda, i) / calc.fact(i)) * calc.exp(-lambda))).sum())))
+        )
+    }),
+    cetz.canvas({
+        plot-style
+        let lambda = 2
         chart.columnchart(
             ..plot-defaults,
             y-tick-step: 0.1,
@@ -512,17 +533,20 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
         )
     }),
     $
+        F(X > k) := 1 - sum_(i=0)^k frac(lambda^i, i!) e^(-lambda)
+    $,
+    $
         P_lambda (k) := frac(lambda^k, k!) e^(-lambda)
     $,
 )
 
 #table(
-    columns: (auto, auto),
+    columns: (auto, auto, auto),
+    $lambda = n p$,
     $E(X) = lambda$,
     $"var"(X) = lambda$,
 )
 ]
-
 #boxeddistr(90deg, "Erlang-Verteilung", dx: -10em, subtitle: [Telefonzentrale, Queues])[
 #table(
     columns: (auto, auto),
@@ -549,13 +573,13 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
         )
     }),
     $
-    F_(X_1,...,X_k)(x) := cases(
+    F_(X_1+...+X_k)(x) := cases(
     1-e^(-a x) sum^(k-1)_(i=0) frac((a x)^i, i!) quad & x >= 0,
     0 & x < 0
     )
     $,
     $
-    phi_(X_1,...,X_k)(x) := cases(
+    phi_(X_1+...+X_k)(x) := cases(
     a^k frac(x^(k-1), (k-1)!) e^(- a x) quad & x >= 0,
     0 & x < 0
     )
@@ -563,7 +587,27 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
 )
 ]
 
-// #context query(<binomdistr>).at(0).location().position().y
+#place(center + horizon,
+    dx: 3.5cm,
+    dy: -4cm,
+    cetz.canvas({
+        import cetz.draw: *
+        line((0,0), (2, 2), name: "line", mark: (end: ">"))
+        set-style(content: (frame: "rect", stroke: none, fill: white, padding: .1))
+        content((name: "line", anchor: 50%), [$n$ gross])
+    })
+)
+
+#place(center + horizon,
+    dx: -4.5cm,
+    dy: 4cm,
+    cetz.canvas({
+        import cetz.draw: *
+        line((0,0), (-1.5, -1.5), name: "line", mark: (end: ">"))
+        set-style(content: (frame: "rect", stroke: none, fill: white, padding: .1))
+        content((name: "line", anchor: 50%), [$p$ klein])
+    })
+)
 
 ]
 
@@ -584,12 +628,12 @@ Anzahl unabhängiger Parameter. Normalerweise Anzahl Versuchsausgänge - 1
 
 === Maximum Likelyhood-Prinzip
 
-Gute Schätzer lassen sich oft ableiten, indem für gegebene Daten die Wahrscheinlichkeit eines Werts eines Parameters  maximiert wird.
+Gute Schätzer lassen sich oft ableiten, indem für gegebene Daten die Wahrscheinlichkeit eines Werts eines Parameters maximiert wird.
 // TODO
 
 === Konfidenzintervalle
 
-Ein Intervall, in dem sich der Erwartungswert einer Zufallsvariable mit Wahrscheinlichkeit $1 - alpha$ befindet.
+Ein Intervall, in dem sich der Erwartungswert einer Zufallsvariable mit Wahrscheinlichkeit $1 - alpha$ befindet. Bei wenig Daten ($n <= 30$) wird normalerweise ein grösseres $alpha$, z.Bsp. $0.05$ verwendet. Bei medizinischen Tests wird oft $alpha <= 0.01$ verwendet.
 
 Berechnung basierend auf einer Stichprobe $X_1, X_2, ...$ mit Grösse $n$:
 
@@ -602,7 +646,7 @@ _Mit bekannter Varianz (in Normalverteilung)_
 _Mit geschätzer Varianz (mit $t$-Verteilung)_
 
 1. Berechne Mittelwert der Stichprobe $overline(X)$,
-2. Berechne Varianz der Stichprobe $S = $
+2. Berechne Varianz der Stichprobe $S^2 = overline(X^2) - overline(X)^2 $
 3. Nachschauen $t_-$ & $t_+$ basierend auf Tabelle der $t$-Verteilung mit $n-1$ Freiheitsgraden
 4. Konfidenzintevall für $mu$: $[overline(X) + t_- S/sqrt(n), overline(X) + t_+ S/sqrt(n)]$
 
@@ -610,18 +654,27 @@ _Mit geschätzer Varianz (mit $t$-Verteilung)_
 = Tests
 
 == $t$-Test
-_Anwendung:_ Stetige Verteilungen, basierend auf Mittelwert und Varianz einer Stichprobe (normalerweise $n <= 30$)
+_Anwendung:_ Test, ob Parameter zweier Datensätze gleich sind ($H_0$)
 
-Basierend auf der t-Verteilung (Parameter: $alpha$, Freiheitsgrade $k$) wird ein
-Konfidenzintervall für den $H_0$-Erwartungswert $mu$ aufgestellt. Verlässt ein
-Wert dieses Konfidenzintervall, kann $H_0$ mit Konfidenz $alpha$ verworfen
-werden.
+Gegeben sind zwei Stichproben $X_1, ..., X_n$ und $Y_1, ..., Y_m$.
+
+Basierend auf der t-Verteilung (Parameter: $alpha$, Freiheitsgrade $k = m + n - 2$). Wenn $k$ gross, ist, Verteilung für $infinity$ Freiheitsgrade verwenden. Wenn $k$ nicht in Tabelle, nächstgrösseren Wert verwenden.
+
+1. $t$-Wert $t_k^alpha$ in Tabelle nachschauen (Achtung normalerweise symmetrisch drum Wert $1-alpha/2$)
+2. Stichprobenmittelwerte $overline(X)$ und $overline(Y)$ und Stichprobenvarianzen $S^2_X$ und $S^2_Y$ berechnen.
+3. $ T = frac(overline(X) - overline(Y), sqrt((n-1) S^2_X + (m-1) S^2_Y)) sqrt(frac(n m k, n + m)) $
 
 == $F$-Test
 _Anwendung:_ Test, ob Varianzen gleich sind.
 
 == $chi^2$-Test
-_Anwendung:_ Diskrete Verteilungen, mind. 5 gemessene Werte pro Kategorie
+_Anwendung:_ Diskrete Verteilungen, mind. 5 gemessene Werte pro Kategorie.
+
+1. Bestimme $x$, die nötige Diskrepanz, um $H_0$ zu verwerfen anhand Tabelle ($d$ Freiheitsgrade):
+   $ F_(chi^2_d)(x) = 1 - alpha $
+2. Berechne Diskrepanz (einzelne Summanden in Tabelle)
+   $ D = sum^d_(i=0) frac((n_i - n p_i)^2, n p_i ) $
+3. Verwerfe Hypothese $H_0$, dass $i$ mit Wahrscheinlichkeit $p_i$ eintritt, falls $D > x$
 
 == Kolmogoroff-Smirnov-Test
 _Anwendung:_ Test, ob Stichprobe nach einer bestimmten Verteilungsfunktion $F$ verteilt ist.
@@ -638,7 +691,16 @@ _Grundidee_: Minimieren der Varianz beim Kombinieren mehrerer Zufallsvariabeln.
 
 Gegeben zwei Zufallsvariabeln $X$ und $Y$, lässt sich ein Mittelwert mit minimaler Varianz folgendermassen bestimmen:
 
-$$
+$
+    t = frac(sigma_2^2, sigma^2_1 + sigma^2_2) \
+    X = t X_1 + (1 - t)X_2
+$
+
+Die Varianz ist dann bestimmt durch:
+
+$
+    1 / sigma^2 = 1 / sigma^2_1 + 1 / sigma^2_2
+$
 
 == Wiener-Filter
 
@@ -666,3 +728,5 @@ $ b = frac(a sigma_X^2, a^2 sigma_X^2 + sigma_N^2) $
 
 
 == Kalman-Filter
+
+$->$ You are doomed.
