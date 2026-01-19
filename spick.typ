@@ -88,6 +88,16 @@ $
 
 $ P(A) = sum^n_(i=0) P(A|B_i) times P(B_i) $
 
+
+== Google-Matrix
+
+Verlinkungsmatrix $H$, Spalten addieren zu $1$. Freier-Wille-Faktor $alpha$, $N$ Seiten. Matrix aus alles $1$: $A$. Startvektor $p_0$.
+
+$G = alpha H + frac(1-alpha, N) A$
+
+Fixpunkt $p = lim_(n->infinity) G^n p_0$ finden.
+
+
 == Zufallsvariabeln
 
 Zufallsvariabeln haben den Typ $Omega -> W$. Informell werten sie Ereignisse.
@@ -181,6 +191,8 @@ $|Omega| = 2$
 
 = Wahrscheinlichkeitsverteilungen
 
+(Siehe Übersicht am Ende)
+
 == Faltung
 (von Wahrscheinlichkeitsdichten)
 
@@ -201,7 +213,142 @@ $
 Wenn beliebige Wahrscheinlichkeitsdichten oft gefaltet werden, nähern sie sich
 einer Normalverteilungsdichte an.
 
-== Katalog
+
+== Skaleninvarianz
+
+$ phi(b x) = g(b) times phi(x) $ für eine passende Renormierungsfunktion $g$.
+
+= Schätzen
+
+=== Konsistenz
+
+Wenn die grösse $n$ der Stichprobe gegen $infinity$ geht, nähert sich der Schätzer dem wahren Wert, also $ lim_(n->infinity) theta(X_1, ..., X_n) = theta $
+
+=== Erwartungstreue
+
+Ein Schätzer $theta(X_1, ..., X_n)$ ist erwartungstreu, wenn der Erwartungswert dem wahren Wert entspricht: $ lim_(n->infinity) E(theta(X_1, ..., X_n)) = theta $
+
+
+=== Freiheitsgrade
+
+Anzahl unabhängiger Parameter. Normalerweise Anzahl Versuchsausgänge - 1
+
+=== Maximum Likelyhood-Prinzip
+
+Gute Schätzer lassen sich oft ableiten, indem für gegebene Daten die Wahrscheinlichkeit eines Werts eines Parameters maximiert wird.
+
+_Gegeben:_ Unbekannter Parameter $theta$ einer Wahrscheinlichkeitsdichte $phi$, Daten $x_1, ..., x_n$.
+
+_Ziel_: $L(x_1, ... x_n; theta) := phi(x_1, theta) times ... times phi(x_n, theta)$ maximieren.
+
+=== Konfidenzintervalle
+
+Ein Intervall, in dem sich der Erwartungswert einer Zufallsvariable mit Wahrscheinlichkeit $1 - alpha$ befindet. Bei wenig Daten ($n <= 30$) wird normalerweise ein grösseres $alpha$, z.Bsp. $0.05$ verwendet. Bei medizinischen Tests wird oft $alpha <= 0.01$ verwendet.
+
+Berechnung basierend auf einer Stichprobe $X_1, X_2, ...$ mit Grösse $n$:
+
+_Mit bekannter Varianz (in Normalverteilung)_
+
+1. Berechne Mittelwert der Stichprobe $overline(X)$
+2. Finde $x_-$, s.t. $F(x_-) = alpha/2$ und $x_+$, s.t. $F(x_+) = 1 - alpha/2$
+3. Konfidenzintervall für $mu$: $[overline(X) + sigma/sqrt(n) x_-, overline(X) + sigma/sqrt(n) x_+]$
+
+_Mit geschätzer Varianz (mit $t$-Verteilung)_
+
+1. Berechne Mittelwert der Stichprobe $overline(X)$,
+2. Berechne Varianz der Stichprobe $S^2 = overline(X^2) - overline(X)^2 $
+3. Nachschauen $t_-$ & $t_+$ basierend auf Tabelle der $t$-Verteilung mit $n-1$ Freiheitsgraden
+4. Konfidenzintevall für $mu$: $[overline(X) + t_- S/sqrt(n), overline(X) + t_+ S/sqrt(n)]$
+
+
+= Tests
+
+== $t$-Test
+_Anwendung:_ Test, ob Parameter zweier Datensätze gleich sind ($H_0$)
+
+Gegeben sind zwei Stichproben $X_1, ..., X_n$ und $Y_1, ..., Y_m$.
+
+Basierend auf der t-Verteilung (Parameter: $alpha$, Freiheitsgrade $k = m + n - 2$). Wenn $k$ gross, ist, Verteilung für $infinity$ Freiheitsgrade verwenden. Wenn $k$ nicht in Tabelle, nächstgrösseren Wert verwenden.
+
+1. $t$-Wert $t_k^alpha$ in Tabelle nachschauen (Achtung normalerweise symmetrisch drum Wert $1-alpha/2$)
+2. Stichprobenmittelwerte $overline(X)$ und $overline(Y)$ und Stichprobenvarianzen $S^2_X$ und $S^2_Y$ berechnen.
+3. $ T = frac(overline(X) - overline(Y), sqrt((n-1) S^2_X + (m-1) S^2_Y)) sqrt(frac(n m k, n + m)) $
+
+== $F$-Test
+_Anwendung:_ Test, ob Varianzen der Stichproben $S_X^2$ (Grösse $n$) und $S_Y^2$ (Grösse $m$) gleich sind.
+
+1. Berechnung $accent(y, "^") = S_X^2 / S_Y^2$
+2. Nachschauen $F^alpha_(n-1,m-1)$ (zur Sicherheit höherer Wert, falls exakter Wert nicht vorhanden)
+3. Falls $accent(y, "^") > F^alpha_(n-1,m-1)$, sind Varianzen nicht gleich.
+
+== $chi^2$-Test
+_Anwendung:_ Diskrete Verteilungen, mind. 5 gemessene Werte pro Kategorie.
+
+1. Bestimme $x$, die nötige Diskrepanz, um $H_0$ zu verwerfen anhand Tabelle ($d$ Freiheitsgrade):
+   $ F_(chi^2_d)(x) = 1 - alpha $
+2. Berechne Diskrepanz (einzelne Summanden in Tabelle)
+   $ D = sum^d_(i=0) frac((n_i - n p_i)^2, n p_i ) $
+3. Verwerfe Hypothese $H_0$, dass $i$ mit Wahrscheinlichkeit $p_i$ eintritt, falls $D > x$
+
+== Kolmogoroff-Smirnov-Test
+_Anwendung:_ Test, ob Stichprobe nach einer bestimmten Verteilungsfunktion $F$ verteilt ist.
+
+1. Die Stichprobe wird auf Gleichverteilung im Intervall $[0, 1]$ reduziert. Dazu wird $F$ auf die Werte angewendet.
+2. $K_"krit"$ nach Tabelle mit Parametern $n$, $alpha$ festlegen
+3. Plot, bei jedem Wert $x$: $y "+=" 1/n$. $K_"krit"$ als Offset $f(x) := x plus.minus K_"krit"$ einzeichnen.
+4. Falls $K_"krit"$ überschritten: $H_0$ verwerfen. Nötigenfalls an einzelnen Stellen $i$ genaue Werte ausrechnen: \
+   $K_n^+ := sqrt(n) (i/n - F(x_i))$ (Überschreitung nach oben) \
+   $K_n^- := sqrt(n) (F(x_i) - frac(i-1, n))$ (Überschreitung nach unten)
+
+= Filter
+_Grundidee_: Minimieren der Varianz beim Kombinieren mehrerer Zufallsvariabeln.
+
+== Optimale Mittelung
+
+Gegeben zwei Zufallsvariabeln $X$ und $Y$, lässt sich ein Mittelwert mit minimaler Varianz folgendermassen bestimmen:
+
+$
+    t = frac(sigma_2^2, sigma^2_1 + sigma^2_2) \
+    X = t X_1 + (1 - t)X_2
+$
+
+Die Varianz ist dann bestimmt durch:
+
+$
+    1 / sigma^2 = 1 / sigma^2_1 + 1 / sigma^2_2
+$
+
+== Wiener-Filter
+
+Gegeben eine Zufallsvariable $X$, ein Dämpfungsfaktor $a$ und ein Störsignal $N$:
+
+#diagram(
+    node-stroke: 1pt,
+    node((-1,0)),
+    edge("->", $X$),
+    node((0,0), [$times$], name: <a>),
+    edge("->", $a X$),
+    node((1,0), [$+$], name: <N>),
+    edge("->", $a X + N$),
+    node((3,0), [$times$], name: <b>),
+    edge("->", $b(a X + N)$),
+    node((5,0)),
+    edge((rel: (0, -1), to: <a>), <a>, "->", $a$),
+    edge((rel: (0, -1), to: <N>), <N>, "->", $N$),
+    edge((rel: (0, -1), to: <b>), <b>, "->", $b$),
+)
+
+_Ziel_: $b$ bestimmen, so dass $"var"(b(a X + N) - X)$ möglichst klein ist.
+
+$ b = frac(a sigma_X^2, a^2 sigma_X^2 + sigma_N^2) $
+
+
+== Kalman-Filter
+
+1. $P_k = (I - K_k H_k) x_(k|k-1) + K_k z_k$
+2. $P_(k+1|k) = phi_k P_k phi^t_k + Q_k$
+3. $K_k = P_(k|k-1) H_k^t (H_k P_(k|k-1) H_k^t + R_k)^(-1)$
+4. You are doomed.
 
 
 #page(flipped: true, columns: 1, "a4", margin: 0.5cm)[
@@ -359,6 +506,7 @@ einer Normalverteilungsdichte an.
             legend: none,
             {
                 plot.add(((-3.0, 1-0.9987),(-2.9, 1-0.9981),(-2.8, 1-0.9974),(-2.7, 1-0.9965),(-2.6, 1-0.9953),(-2.5, 1-0.9938),(-2.4, 1-0.9918),(-2.3, 1-0.9893),(-2.2, 1-0.9861),(-2.1, 1-0.9821),(-2.0, 1-0.9772),(-1.9, 1-0.9713),(-1.8, 1-0.9641),(-1.7, 1-0.9554),(-1.6, 1-0.9452),(-1.5, 1-0.9332),(-1.4, 1-0.9192),(-1.3, 1-0.9032),(-1.2, 1-0.8849),(-1.1, 1-0.8643),(-1.0, 1-0.8413),(-0.9, 1-0.8159),(-0.8, 1-0.7881),(-0.7, 1-0.7580),(-0.6, 1-0.7257),(-0.5, 1-0.6915),(-0.4, 1-0.6554),(-0.3, 1-0.6179),(-0.2, 1-0.5793),(-0.1, 1-0.5398), /**/ (0.0, 0.5000), (0.1, 0.5398), (0.2, 0.5793),(0.3, 0.6179),(0.4, 0.6554),(0.5, 0.6915),(0.6, 0.7257),(0.7, 0.7580),(0.8, 0.7881),(0.9, 0.8159),(1.0, 0.8413),(1.1, 0.8643),(1.2, 0.8849),(1.3, 0.9032),(1.4, 0.9192),(1.5, 0.9332),(1.6, 0.9452),(1.7, 0.9554),(1.8, 0.9641),(1.9, 0.9713),(2.0, 0.9772),(2.1, 0.9821),(2.2, 0.9861),(2.3, 0.9893),(2.4, 0.9918),(2.5, 0.9938),(2.6, 0.9953),(2.7, 0.9965),(2.8, 0.9974),(2.9, 0.9981),(3.0, 0.9987)))
+                plot.add-vline(0, label: $mu$)
             }
         )
     }),
@@ -373,6 +521,7 @@ einer Normalverteilungsdichte an.
                 plot.add(domain: (-3, 3), x =>
                 1 / (calc.sqrt(2*calc.pi)) * calc.exp(- (x*x) / 2)
                 )
+                plot.add-vline(0, label: $mu$)
             }
         )
     }),
@@ -478,7 +627,7 @@ Für Standardverteilung: $mu = 0$, $sigma = 1$
     $sigma = sqrt("var"(X))$
 )
 Normalapproximation mit Korrektur: \
-$P(X <= a) = Phi(frac(b + 1/2 - mu, sigma))$ \
+$P(X <= a) = Phi(frac(a + 1/2 - mu, sigma))$ \
 $P(a <= X <= b) = Phi(frac(b + 1/2 - mu, sigma)) - Phi(frac(a - 1/2 - mu, sigma))$
 
 ]
@@ -533,7 +682,7 @@ $P(a <= X <= b) = Phi(frac(b + 1/2 - mu, sigma)) - Phi(frac(a - 1/2 - mu, sigma)
         )
     }),
     $
-        F(X > k) := 1 - sum_(i=0)^k frac(lambda^i, i!) e^(-lambda)
+        P(X > k) := 1 - sum_(i=0)^k frac(lambda^i, i!) e^(-lambda)
     $,
     $
         P_lambda (k) := frac(lambda^k, k!) e^(-lambda)
@@ -610,123 +759,3 @@ $P(a <= X <= b) = Phi(frac(b + 1/2 - mu, sigma)) - Phi(frac(a - 1/2 - mu, sigma)
 )
 
 ]
-
-= Schätzen
-
-=== Konsistenz
-
-Wenn die grösse $n$ der Stichprobe gegen $infinity$ geht, nähert sich der Schätzer dem wahren Wert, also $ lim_(n->infinity) theta(X_1, ..., X_n) = theta $
-
-=== Erwartungstreue
-
-Ein Schätzer $theta(X_1, ..., X_n)$ ist erwartungstreu, wenn der Erwartungswert dem wahren Wert entspricht: $ lim_(n->infinity) E(theta(X_1, ..., X_n)) = theta $
-
-
-=== Freiheitsgrade
-
-Anzahl unabhängiger Parameter. Normalerweise Anzahl Versuchsausgänge - 1
-
-=== Maximum Likelyhood-Prinzip
-
-Gute Schätzer lassen sich oft ableiten, indem für gegebene Daten die Wahrscheinlichkeit eines Werts eines Parameters maximiert wird.
-// TODO
-
-=== Konfidenzintervalle
-
-Ein Intervall, in dem sich der Erwartungswert einer Zufallsvariable mit Wahrscheinlichkeit $1 - alpha$ befindet. Bei wenig Daten ($n <= 30$) wird normalerweise ein grösseres $alpha$, z.Bsp. $0.05$ verwendet. Bei medizinischen Tests wird oft $alpha <= 0.01$ verwendet.
-
-Berechnung basierend auf einer Stichprobe $X_1, X_2, ...$ mit Grösse $n$:
-
-_Mit bekannter Varianz (in Normalverteilung)_
-
-1. Berechne Mittelwert der Stichprobe $overline(X)$
-2. Finde $x_-$, s.t. $F(x_-) = alpha/2$ und $x_+$, s.t. $F(x_+) = 1 - alpha/2$
-3. Konfidenzintervall für $mu$: $[overline(X) + sigma/sqrt(n) x_-, overline(X) + sigma/sqrt(n) x_+]$
-
-_Mit geschätzer Varianz (mit $t$-Verteilung)_
-
-1. Berechne Mittelwert der Stichprobe $overline(X)$,
-2. Berechne Varianz der Stichprobe $S^2 = overline(X^2) - overline(X)^2 $
-3. Nachschauen $t_-$ & $t_+$ basierend auf Tabelle der $t$-Verteilung mit $n-1$ Freiheitsgraden
-4. Konfidenzintevall für $mu$: $[overline(X) + t_- S/sqrt(n), overline(X) + t_+ S/sqrt(n)]$
-
-
-= Tests
-
-== $t$-Test
-_Anwendung:_ Test, ob Parameter zweier Datensätze gleich sind ($H_0$)
-
-Gegeben sind zwei Stichproben $X_1, ..., X_n$ und $Y_1, ..., Y_m$.
-
-Basierend auf der t-Verteilung (Parameter: $alpha$, Freiheitsgrade $k = m + n - 2$). Wenn $k$ gross, ist, Verteilung für $infinity$ Freiheitsgrade verwenden. Wenn $k$ nicht in Tabelle, nächstgrösseren Wert verwenden.
-
-1. $t$-Wert $t_k^alpha$ in Tabelle nachschauen (Achtung normalerweise symmetrisch drum Wert $1-alpha/2$)
-2. Stichprobenmittelwerte $overline(X)$ und $overline(Y)$ und Stichprobenvarianzen $S^2_X$ und $S^2_Y$ berechnen.
-3. $ T = frac(overline(X) - overline(Y), sqrt((n-1) S^2_X + (m-1) S^2_Y)) sqrt(frac(n m k, n + m)) $
-
-== $F$-Test
-_Anwendung:_ Test, ob Varianzen gleich sind.
-
-== $chi^2$-Test
-_Anwendung:_ Diskrete Verteilungen, mind. 5 gemessene Werte pro Kategorie.
-
-1. Bestimme $x$, die nötige Diskrepanz, um $H_0$ zu verwerfen anhand Tabelle ($d$ Freiheitsgrade):
-   $ F_(chi^2_d)(x) = 1 - alpha $
-2. Berechne Diskrepanz (einzelne Summanden in Tabelle)
-   $ D = sum^d_(i=0) frac((n_i - n p_i)^2, n p_i ) $
-3. Verwerfe Hypothese $H_0$, dass $i$ mit Wahrscheinlichkeit $p_i$ eintritt, falls $D > x$
-
-== Kolmogoroff-Smirnov-Test
-_Anwendung:_ Test, ob Stichprobe nach einer bestimmten Verteilungsfunktion $F$ verteilt ist.
-
-1. Die Stichprobe wird auf Gleichverteilung im Intervall $[0, 1]$ reduziert. Dazu wird $F$ auf die Werte angewendet.
-2. Konfidenzintervall nach Tabelle mit Parametern $n$, $alpha$ festlegen
-3. Plot
-4. Falls Grenzwerte überschritten: $H_0$ verwerfen
-
-= Filter
-_Grundidee_: Minimieren der Varianz beim Kombinieren mehrerer Zufallsvariabeln.
-
-== Optimale Mittelung
-
-Gegeben zwei Zufallsvariabeln $X$ und $Y$, lässt sich ein Mittelwert mit minimaler Varianz folgendermassen bestimmen:
-
-$
-    t = frac(sigma_2^2, sigma^2_1 + sigma^2_2) \
-    X = t X_1 + (1 - t)X_2
-$
-
-Die Varianz ist dann bestimmt durch:
-
-$
-    1 / sigma^2 = 1 / sigma^2_1 + 1 / sigma^2_2
-$
-
-== Wiener-Filter
-
-Gegeben eine Zufallsvariable $X$, ein Dämpfungsfaktor $a$ und ein Störsignal $N$:
-
-#diagram(
-    node-stroke: 1pt,
-    node((-1,0)),
-    edge("->", $X$),
-    node((0,0), [$times$], name: <a>),
-    edge("->", $a X$),
-    node((1,0), [$+$], name: <N>),
-    edge("->", $a X + N$),
-    node((3,0), [$times$], name: <b>),
-    edge("->", $b(a X + N)$),
-    node((5,0)),
-    edge((rel: (0, -1), to: <a>), <a>, "->", $a$),
-    edge((rel: (0, -1), to: <N>), <N>, "->", $N$),
-    edge((rel: (0, -1), to: <b>), <b>, "->", $b$),
-)
-
-_Ziel_: $b$ bestimmen, so dass $"var"(b(a X + N) - X)$ möglichst klein ist.
-
-$ b = frac(a sigma_X^2, a^2 sigma_X^2 + sigma_N^2) $
-
-
-== Kalman-Filter
-
-$->$ You are doomed.
